@@ -1,4 +1,5 @@
 #region Setup
+using Microsoft.AspNetCore.Mvc;
 using UnitTestingA1Base.Data;
 using UnitTestingA1Base.Models;
 
@@ -9,8 +10,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 // Application Storage persists for single session
-AppStorage appStorage = new AppStorage();
-BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);    
+AppStorage appStorage = new();
+BusinessLogicLayer bll = new(appStorage);    
 #endregion
 
 
@@ -48,7 +49,15 @@ app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 /// </summary>
 app.MapGet("/recipes/byDiet", (string name, int id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipesByDietaryRestriction(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>

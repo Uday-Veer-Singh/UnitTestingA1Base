@@ -6,9 +6,11 @@ namespace UnitTestingA1Base.Data
     {
         private AppStorage _appStorage;
 
-        public BusinessLogicLayer(AppStorage appStorage) {
+        public BusinessLogicLayer(AppStorage appStorage) 
+        {
             _appStorage = appStorage;
         }
+
         public HashSet<Recipe> GetRecipesByIngredient(int? id, string? name)
         {
             Ingredient ingredient;
@@ -25,5 +27,51 @@ namespace UnitTestingA1Base.Data
 
             return recipes;
         }
+
+        public HashSet<Recipe> GetRecipesByDietaryRestriction(int? id, string? name)
+        {
+            Ingredient ingredient;
+            HashSet<Recipe> recipes = new HashSet<Recipe>();
+
+            if (id != null)
+            {
+                // Retrieve the ingredient by ID
+                ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Id == id);
+
+                if (ingredient != null)
+                {
+                    // Get all RecipeIngredient entries associated with the ingredient
+                    HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients
+                        .Where(ri => ri.IngredientId == ingredient.Id)
+                        .ToHashSet();
+
+                    // Find recipes that have a relationship with the ingredient
+                    recipes = _appStorage.Recipes
+                        .Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id))
+                        .ToHashSet();
+                }
+            }
+            else if (!string.IsNullOrEmpty(name))
+            {
+                // Retrieve the ingredient by name (case-insensitive search)
+                ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+                if (ingredient != null)
+                {
+                    // Get all RecipeIngredient entries associated with the ingredient
+                    HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients
+                        .Where(ri => ri.IngredientId == ingredient.Id)
+                        .ToHashSet();
+
+                    // Find recipes that have a relationship with the ingredient
+                    recipes = _appStorage.Recipes
+                        .Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id))
+                        .ToHashSet();
+                }
+            }
+
+            return recipes;
+        }
+
     }
 }
