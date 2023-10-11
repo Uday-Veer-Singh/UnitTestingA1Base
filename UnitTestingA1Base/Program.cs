@@ -65,7 +65,15 @@ app.MapGet("/recipes/byDiet", (string name, int id) =>
 /// </summary>
 app.MapGet("/recipes", (string name, int id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipes(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>

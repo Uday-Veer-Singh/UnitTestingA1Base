@@ -98,5 +98,34 @@ namespace UnitTestingA1Base.Data
             return recipes;
         }
 
+
+        public HashSet<Recipe> GetRecipes(int id, string name)
+        {
+            // Initialize a collection to store found recipes.
+            HashSet<Recipe> recipes = new HashSet<Recipe>();
+
+            // Search for recipes by ID.
+            if (id != 0)
+            {
+                Recipe recipe = _appStorage.Recipes.FirstOrDefault(r => r.Id == id);
+
+                if (recipe != null)
+                {
+                    recipes.Add(recipe);
+                }
+            }
+
+            // If no recipe is found by ID, try searching by name.
+            if (recipes.Count == 0 && !string.IsNullOrEmpty(name))
+            {
+                recipes = _appStorage.Recipes
+                    .Where(r => r.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
+                    .ToHashSet();
+            }
+
+            return recipes;
+        }
+
+
     }
 }
