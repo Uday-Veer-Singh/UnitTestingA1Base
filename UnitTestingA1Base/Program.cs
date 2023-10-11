@@ -1,6 +1,7 @@
 #region Setup
 using Microsoft.AspNetCore.Mvc;
 using UnitTestingA1Base.Data;
+using UnitTestingA1Base.Methods;
 using UnitTestingA1Base.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ app.UseHttpsRedirection();
 
 // Application Storage persists for single session
 AppStorage appStorage = new();
-BusinessLogicLayer bll = new(appStorage);    
+BusinessLogicLayer bll = new(appStorage);
 #endregion
 
 
@@ -34,11 +35,20 @@ BusinessLogicLayer bll = new(appStorage);
 /// </summary>
 app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 {
-    try 
+    try
     {
         HashSet<Recipe> recipes = bll.GetRecipesByIngredient(id, name);
         return Results.Ok(recipes);
-    } catch(Exception ex)
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
+    }
+    catch (Exception ex)
     {
         return Results.NotFound();
     }
@@ -53,6 +63,14 @@ app.MapGet("/recipes/byDiet", (string name, int id) =>
     {
         HashSet<Recipe> recipes = bll.GetRecipesByDietaryRestriction(id, name);
         return Results.Ok(recipes);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
     }
     catch (Exception ex)
     {
@@ -69,6 +87,14 @@ app.MapGet("/recipes", (string name, int id) =>
     {
         HashSet<Recipe> recipes = bll.GetRecipes(id, name);
         return Results.Ok(recipes);
+    }
+     catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
     }
     catch (Exception ex)
     {
@@ -89,8 +115,25 @@ app.MapGet("/recipes", (string name, int id) =>
 /// 
 /// All IDs should be created for these objects using the returned value of the AppStorage.GeneratePrimaryKey() method
 /// </summary>
-app.MapPost("/recipes", () => {
-
+app.MapPost("/recipes", (RecipeIngredientInput recipeIngredientInput) =>
+{
+    try
+    {
+        bll.RecipeWithIngridients(recipeIngredientInput.Recipe, recipeIngredientInput.Ingredients);
+        return Results.Ok(recipeIngredientInput);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem();
+    }
 });
 
 ///<summary>
@@ -100,8 +143,25 @@ app.MapPost("/recipes", () => {
 ///</summary>
 app.MapDelete("/ingredients", (int id, string name) =>
 {
-
+    try
+    {
+        bll.DeleteIngredient(id, name);
+        return Results.Ok();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem();
+    }
 });
+
 
 /// <summary>
 /// Deletes the requested recipe from the database
@@ -109,10 +169,27 @@ app.MapDelete("/ingredients", (int id, string name) =>
 /// </summary>
 app.MapDelete("/recipes", (int id, string name) =>
 {
-
+    try
+    {
+        bll.DeleteRecipe(id, name);
+        return Results.Ok();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(new { message = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem();
+    }
 });
 
-#endregion
 
+
+#endregion
 
 app.Run();

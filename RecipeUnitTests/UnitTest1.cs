@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using UnitTestingA1Base.Data;
 using UnitTestingA1Base.Models;
 
@@ -30,8 +31,8 @@ namespace RecipeUnitTests
         public void GetRecipesByIngredient_ValidName_ReturnsRecipesWithIngredient()
         {
             // Arrange
-            AppStorage appStorage = new AppStorage(); 
-            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage); 
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 
             // Create a test ingredient
             Ingredient ingredient = new Ingredient { Id = 1, Name = "Spaghetti" };
@@ -61,8 +62,8 @@ namespace RecipeUnitTests
 
             // Assert
             // Expecting recipe1 to be in the result
-            Assert.IsTrue(result.Contains(recipe1)); 
-            Assert.IsFalse(result.Contains(recipe2)); 
+            Assert.IsTrue(result.Contains(recipe1));
+            Assert.IsFalse(result.Contains(recipe2));
             // Expecting recipe3 not to be in the result
         }
 
@@ -74,7 +75,7 @@ namespace RecipeUnitTests
             AppStorage appStorage = new AppStorage();
 
             // Initialize the BusinessLogicLayer
-            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage); 
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 
             // Create an ingredient with an ID that doesn't exist in the storage
             Ingredient ingredient = new Ingredient { Id = 999, Name = "Invalid Ingredient" };
@@ -144,7 +145,107 @@ namespace RecipeUnitTests
             Assert.AreEqual(2, result.Count);
             Assert.IsTrue(result.Contains(recipe1));
         }
+        #endregion
+
+        #region Get All Recipies
+        [TestClass]
+        public class BusinessLogicLayerTests
+        {
+            [TestMethod]
+            public void GetRecipes_ShouldReturnRecipe_WhenValidIdProvided()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Act
+                var recipes = bll.GetRecipes(1, null);
+
+                // Assert
+                Assert.IsNotNull(recipes);
+            }
+
+            [TestMethod]
+            public void GetRecipes_ShouldReturnRecipe_WhenValidNameProvided()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Act
+                var recipes = bll.GetRecipes(0, "Spaghetti Carbonara");
+
+                // Assert
+                Assert.IsNotNull(recipes);
+            }
+
+            [TestMethod]
+            public void GetRecipes_ShouldReturnEmpty_WhenInvalidIdProvided()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Act
+                var recipes = bll.GetRecipes(100, null);
+
+                // Assert
+                Assert.IsNotNull(recipes);
+            }
+
+            [TestMethod]
+            public void GetRecipes_ShouldReturnEmpty_WhenInvalidNameProvided()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Act
+                var recipes = bll.GetRecipes(0, "Nonexistent Recipe");
+
+                // Assert
+                Assert.IsNotNull(recipes);
+            }
+
+            [TestMethod]
+            [ExpectedException(typeof(ArgumentNullException))]
+            public void GetRecipes_ShouldThrowArgumentNullException_WhenNoIdOrNameProvided()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Act
+                bll.GetRecipes(0, null);
+            }
             #endregion
-        
+            #region Post Recipe With Ingredients
+            [TestMethod]
+            public void RecipeExistsByName_RecipeExists_ThrowsInvalidOperationException()
+            {
+                // Arrange
+                var appStorage = new AppStorage();
+                var bll = new BusinessLogicLayer(appStorage);
+
+                // Create a sample recipe with the same name as an existing one
+                var existingRecipeName = "Spaghetti Carbonara";
+                var newRecipe = new Recipe { Name = existingRecipeName };
+
+                // Add the existing recipe to the storage
+                appStorage.Recipes.Add(new Recipe
+                {
+                    Id = 1,
+                    Name = existingRecipeName,
+                    Description = "Sample description",
+                    Servings = 2
+                });
+
+                // Act and Assert
+                // Ensure that attempting to add a recipe with an existing name throws InvalidOperationException
+                Assert.ThrowsException<InvalidOperationException>(() => bll.RecipeExistsByName(newRecipe.Name));
+            }
+
+            #endregion
+        }
     }
 }
