@@ -11,6 +11,6 @@
     public enum MeasurementUnit
     {
         Grams,
-        Milliletres
+        Milliliters
     }
 }

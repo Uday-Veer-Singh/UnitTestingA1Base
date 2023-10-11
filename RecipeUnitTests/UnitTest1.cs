@@ -11,6 +11,7 @@ namespace RecipeUnitTests
             return new BusinessLogicLayer(new AppStorage());
         }
 
+        #region Get Recipies by Ingredients
         [TestMethod]
         public void GetRecipesByIngredient_ValidId_ReturnsRecipesWithIngredient()
         {
@@ -87,6 +88,63 @@ namespace RecipeUnitTests
             // Expecting the result to be null
             Assert.IsTrue(result.Count == 0); // Expecting an empty HashSet
         }
+        #endregion
 
+        #region Get Recipes By Dietary Restriction
+        [TestMethod]
+        public void GetRecipesByDietaryRestriction_ShouldReturnRecipes_WhenValidIdProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            Ingredient ingredient1 = new Ingredient { Id = 1, Name = "Eggs" };
+            Recipe recipe1 = new Recipe { Id = 1, Name = "Scrambled Eggs" };
+            appStorage.Ingredients.Add(ingredient1);
+            appStorage.Recipes.Add(recipe1);
+            appStorage.RecipeIngredients.Add(new RecipeIngredient
+            {
+                IngredientId = ingredient1.Id,
+                RecipeId = recipe1.Id,
+                Amount = 2,
+                MeasurementUnit = MeasurementUnit.Milliliters
+            });
+
+            // Act
+            HashSet<Recipe> result = bll.GetRecipesByDietaryRestriction(1, null);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.Contains(recipe1));
+        }
+
+        [TestMethod]
+        public void GetRecipesByDietaryRestriction_ShouldReturnRecipes_WhenValidNameProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            Ingredient ingredient1 = new Ingredient { Id = 1, Name = "Eggs" };
+            Recipe recipe1 = new Recipe { Id = 1, Name = "Scrambled Eggs" };
+            appStorage.Ingredients.Add(ingredient1);
+            appStorage.Recipes.Add(recipe1);
+            appStorage.RecipeIngredients.Add(new RecipeIngredient
+            {
+                IngredientId = ingredient1.Id,
+                RecipeId = recipe1.Id,
+                Amount = 2,
+                MeasurementUnit = MeasurementUnit.Milliliters
+            });
+
+            // Act
+            HashSet<Recipe> result = bll.GetRecipesByDietaryRestriction(null, "Eggs");
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.Contains(recipe1));
+        }
+            #endregion
+        
     }
 }

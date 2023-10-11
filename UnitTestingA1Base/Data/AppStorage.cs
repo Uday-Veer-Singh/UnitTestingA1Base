@@ -207,7 +207,7 @@ namespace UnitTestingA1Base.Data
                 IngredientId = 2,
                 RecipeId = 1,
                 Amount = 2,
-                MeasurementUnit = MeasurementUnit.Milliletres
+                MeasurementUnit = MeasurementUnit.Milliliters
             },
             new RecipeIngredient
             {
@@ -221,7 +221,7 @@ namespace UnitTestingA1Base.Data
                 IngredientId = 4,
                 RecipeId = 3,
                 Amount = 4,
-                MeasurementUnit = MeasurementUnit.Milliletres
+                MeasurementUnit = MeasurementUnit.Milliliters
             },
             new RecipeIngredient
             {
@@ -293,7 +293,7 @@ namespace UnitTestingA1Base.Data
                 IngredientId = 9,
                 RecipeId = 11,
                 Amount = 3,
-                MeasurementUnit = MeasurementUnit.Milliletres
+                MeasurementUnit = MeasurementUnit.Milliliters
             }
 
         };
