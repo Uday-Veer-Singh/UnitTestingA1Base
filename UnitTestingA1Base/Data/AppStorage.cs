@@ -15,14 +15,14 @@ namespace UnitTestingA1Base.Data
         public HashSet<Recipe> Recipes { get; set; }
         public HashSet<DietaryRestriction> DietaryRestrictions { get; set; }
         public HashSet<Ingredient> Ingredients { get; set; }
-        public HashSet<IngredientRestriction> IngredientRestrictions { get; set; }  
+        public HashSet<IngredientRestriction> IngredientRestrictions { get; set; }
         public HashSet<RecipeIngredient> RecipeIngredients { get; set; }
-        
+
         public int GeneratePrimaryKey()
         {
             return _idCount++;
         }
-        public AppStorage ()
+        public AppStorage()
         {
             Recipes = new HashSet<Recipe>
         {

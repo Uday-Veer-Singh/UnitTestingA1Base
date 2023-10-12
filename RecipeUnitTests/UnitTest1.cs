@@ -217,15 +217,11 @@ namespace RecipeUnitTests
             AppStorage appStorage = new AppStorage();
             BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 
-            // Create test data
-            var ingredient = new Ingredient { Id = 1, Name = "Test Ingredient" };
-            appStorage.Ingredients.Add(ingredient);
-
             // Act
             bll.DeleteIngredient(1, null);
 
             // Assert
-            Assert.AreEqual(10, appStorage.Ingredients.Count);
+            Assert.IsNull(appStorage.Ingredients.FirstOrDefault(i => i.Id == 1));
         }
 
         [TestMethod]
@@ -235,16 +231,101 @@ namespace RecipeUnitTests
             AppStorage appStorage = new AppStorage();
             BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 
-            // Create test data
-            var ingredient = new Ingredient { Id = 1, Name = "Test Ingredient" };
-            appStorage.Ingredients.Add(ingredient);
-
             // Act
-            bll.DeleteIngredient(null, "Test Ingredient");
+            bll.DeleteIngredient(null, "Spaghetti");
 
             // Assert
-            Assert.AreEqual(0, appStorage.Ingredients.Count);
+            Assert.IsNull(appStorage.Ingredients.FirstOrDefault(i => i.Name == "Spaghetti"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DeleteIngredient_ShouldThrowArgumentException_WhenBothIdAndNameAreNull()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteIngredient(null, null);
+
+            // No assertion needed; expecting an ArgumentException.
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void DeleteIngredient_ShouldThrowInvalidOperationException_WhenIngredientNotFound()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteIngredient(100, null);
+
+            // No assertion needed; expecting an InvalidOperationException.
+        
+        }
+
+        #endregion
+
+        #region Delete Recipe
+        [TestMethod]
+        public void DeleteRecipe_ShouldDeleteRecipe_WhenValidIdProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteRecipe(1, null);
+
+            // Assert
+            Assert.IsNull(appStorage.Recipes.FirstOrDefault(r => r.Id == 1));
+        }
+
+        [TestMethod]
+        public void DeleteRecipe_ShouldDeleteRecipe_WhenValidNameProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteRecipe(null, "Spaghetti Carbonara");
+
+            // Assert
+            Assert.IsNull(appStorage.Recipes.FirstOrDefault(r => r.Name.Equals("Spaghetti Carbonara", StringComparison.OrdinalIgnoreCase)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DeleteRecipe_ShouldThrowArgumentException_WhenBothIdAndNameAreNull()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteRecipe(null, null);
+
+            // No assertion needed; expecting an ArgumentException.
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DeleteRecipe_ShouldThrowArgumentException_WhenRecipeNotFound()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            bll.DeleteRecipe(100, null);
+
+            // No assertion needed; expecting an ArgumentException.
         }
         #endregion
     }
+
 }
