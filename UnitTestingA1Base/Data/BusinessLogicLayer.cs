@@ -52,7 +52,6 @@ namespace UnitTestingA1Base.Data
             return recipes;
         }
 
-
         public HashSet<Recipe> GetRecipesByDietaryRestriction(int? id, string? name)
         {
             Ingredient ingredient;

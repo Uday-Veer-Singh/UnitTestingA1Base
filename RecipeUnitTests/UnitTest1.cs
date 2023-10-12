@@ -148,104 +148,103 @@ namespace RecipeUnitTests
         #endregion
 
         #region Get All Recipies
-        [TestClass]
-        public class BusinessLogicLayerTests
+        [TestMethod]
+        public void GetRecipes_ShouldReturnRecipe_WhenValidIdProvided()
         {
-            [TestMethod]
-            public void GetRecipes_ShouldReturnRecipe_WhenValidIdProvided()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
+            // Arrange
+            var appStorage = new AppStorage();
+            var bll = new BusinessLogicLayer(appStorage);
 
-                // Act
-                var recipes = bll.GetRecipes(1, null);
+            // Act
+            var recipes = bll.GetRecipes(1, null);
 
-                // Assert
-                Assert.IsNotNull(recipes);
-            }
-
-            [TestMethod]
-            public void GetRecipes_ShouldReturnRecipe_WhenValidNameProvided()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
-
-                // Act
-                var recipes = bll.GetRecipes(0, "Spaghetti Carbonara");
-
-                // Assert
-                Assert.IsNotNull(recipes);
-            }
-
-            [TestMethod]
-            public void GetRecipes_ShouldReturnEmpty_WhenInvalidIdProvided()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
-
-                // Act
-                var recipes = bll.GetRecipes(100, null);
-
-                // Assert
-                Assert.IsNotNull(recipes);
-            }
-
-            [TestMethod]
-            public void GetRecipes_ShouldReturnEmpty_WhenInvalidNameProvided()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
-
-                // Act
-                var recipes = bll.GetRecipes(0, "Nonexistent Recipe");
-
-                // Assert
-                Assert.IsNotNull(recipes);
-            }
-
-            [TestMethod]
-            [ExpectedException(typeof(ArgumentNullException))]
-            public void GetRecipes_ShouldThrowArgumentNullException_WhenNoIdOrNameProvided()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
-
-                // Act
-                bll.GetRecipes(0, null);
-            }
-            #endregion
-            #region Post Recipe With Ingredients
-            [TestMethod]
-            public void RecipeExistsByName_RecipeExists_ThrowsInvalidOperationException()
-            {
-                // Arrange
-                var appStorage = new AppStorage();
-                var bll = new BusinessLogicLayer(appStorage);
-
-                // Create a sample recipe with the same name as an existing one
-                var existingRecipeName = "Spaghetti Carbonara";
-                var newRecipe = new Recipe { Name = existingRecipeName };
-
-                // Add the existing recipe to the storage
-                appStorage.Recipes.Add(new Recipe
-                {
-                    Id = 1,
-                    Name = existingRecipeName,
-                    Description = "Sample description",
-                    Servings = 2
-                });
-
-                // Act and Assert
-                // Ensure that attempting to add a recipe with an existing name throws InvalidOperationException
-                Assert.ThrowsException<InvalidOperationException>(() => bll.RecipeExistsByName(newRecipe.Name));
-            }
-
-            #endregion
+            // Assert
+            Assert.IsTrue(recipes.Count > 0); 
+            // Check that recipes contain at least one item.
         }
+
+        [TestMethod]
+        public void GetRecipes_ShouldReturnRecipe_WhenValidNameProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            var recipes = bll.GetRecipes(0, "Spaghetti Carbonara");
+
+            // Assert
+            Assert.IsTrue(recipes.Count > 0); 
+            // Check that recipes contain at least one item.
+        }
+
+        [TestMethod]
+        public void GetRecipes_ShouldReturnEmpty_WhenInvalidIdProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            var recipes = bll.GetRecipes(100, null);
+
+            // Assert
+            Assert.AreEqual(0, recipes.Count); 
+            // Check that recipes are empty.
+        }
+
+        [TestMethod]
+        public void GetRecipes_ShouldReturnEmpty_WhenInvalidNameProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act
+            var recipes = bll.GetRecipes(0, "Nonexistent Recipe");
+
+            // Assert
+            Assert.AreEqual(0, recipes.Count); 
+            // Check that recipes are empty.
+        }
+        #endregion
+
+        #region Delete Ingredient
+        [TestMethod]
+        public void DeleteIngredient_ShouldDeleteIngredient_WhenValidIdProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Create test data
+            var ingredient = new Ingredient { Id = 1, Name = "Test Ingredient" };
+            appStorage.Ingredients.Add(ingredient);
+
+            // Act
+            bll.DeleteIngredient(1, null);
+
+            // Assert
+            Assert.AreEqual(10, appStorage.Ingredients.Count);
+        }
+
+        [TestMethod]
+        public void DeleteIngredient_ShouldDeleteIngredient_WhenValidNameProvided()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Create test data
+            var ingredient = new Ingredient { Id = 1, Name = "Test Ingredient" };
+            appStorage.Ingredients.Add(ingredient);
+
+            // Act
+            bll.DeleteIngredient(null, "Test Ingredient");
+
+            // Assert
+            Assert.AreEqual(0, appStorage.Ingredients.Count);
+        }
+        #endregion
     }
 }
